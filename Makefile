@@ -128,3 +128,44 @@ source-package:
 	cp css/all.css source_package/jitsi-meet/css && \
 	(cd source_package ; tar cjf ../jitsi-meet.tar.bz2 jitsi-meet) && \
 	rm -rf source_package
+
+
+#------------------------------------------------------------
+# Variables
+IMAGE_NAME=progressnet/jitsi-test
+TAG=latest
+
+# Default target
+.PHONY: build_and_push
+build_and_push: build push
+
+# Build the Docker image
+.PHONY: build
+build:
+	docker build -t $(IMAGE_NAME):$(TAG) .
+
+# Push the Docker image to DockerHub
+.PHONY: push
+push:
+	docker push $(IMAGE_NAME):$(TAG)
+
+# Clean up local Docker images
+.PHONY: clean
+clean:
+	docker rmi $(IMAGE_NAME):$(TAG)
+
+# Run the Docker image locally
+.PHONY: run
+run:
+	docker run -p 8000:80 $(IMAGE_NAME):$(TAG)
+
+# Help message
+.PHONY: help
+help:
+	@echo "Usage:"
+	@echo "  make build    - Build the Docker image"
+	@echo "  make push     - Push the Docker image to DockerHub"
+	@echo "  make clean    - Remove the local Docker image"
+	@echo "  make run      - Run the Docker image locally"
+	@echo "  make build_and_push - Build and push the Docker image"
+	@echo "  make help     - Show this help message"
